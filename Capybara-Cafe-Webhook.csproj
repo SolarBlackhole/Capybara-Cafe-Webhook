@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Capybara_Cafe_Webhook</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="PluginAPI">
+      <HintPath>lib/PluginAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
