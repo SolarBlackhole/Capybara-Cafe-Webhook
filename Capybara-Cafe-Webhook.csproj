@@ -1,16 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Capybara_Cafe_Webhook</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CapybaraCafePlugin</AssemblyName>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>CapybaraCafePlugin</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="PluginAPI">
-      <HintPath>lib/PluginAPI.dll</HintPath>
+    <Reference Include="Asssembly-CSharp">
+      <HintPath>lib/Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="LabApi">
+      <HintPath>lib/LabApi.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>lib/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+          <HintPath>lib/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

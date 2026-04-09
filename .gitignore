@@ -1,2 +1,5 @@
 Capybara-Cafe-Webhook/.gitIgnore
 obj/
+lib/
+bin/
+Capybara-Cafe-Webhook.sln
