@@ -3,6 +3,7 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Features;
 using CapybaraCafePlugin.EventListeners;
+using CapybaraCafePlugin.Discord;
 using System;
 using LabApi.Features.Console;
 
@@ -21,12 +22,15 @@ namespace CapybaraCafePlugin
         public override void Enable()
         {
             CustomHandlersManager.RegisterEventsHandler(Events);
+            HeartbeatManager.Start();
             Logger.Info("Capybara Cafe Plugin has been enabled!");
+
         }
 
         public override void Disable()
         {
             CustomHandlersManager.UnregisterEventsHandler(Events);
+            HeartbeatManager.Stop();
             Logger.Info("Capybara Cafe Plugin has been disabled!");
         }
     }

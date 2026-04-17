@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using LabApi.Features.Console;
 
-namespace CapybaraCafePlugin
+namespace CapybaraCafePlugin.Discord
 {
     public static class DiscordBridge
     {
@@ -36,5 +36,7 @@ namespace CapybaraCafePlugin
                 Logger.Error($"[DiscordBridge] Send Error: {ex.Message}");
             }
         }
+
+        
     }
 }

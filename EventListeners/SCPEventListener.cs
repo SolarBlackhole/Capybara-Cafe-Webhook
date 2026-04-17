@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GameCore;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
@@ -10,6 +9,7 @@ using LabApi.Features.Enums;
 using LabApi.Features.Wrappers;
 using PlayerRoles;
 using RemoteAdmin;
+using CapybaraCafePlugin.Discord;
 
 
 namespace CapybaraCafePlugin.EventListeners {
@@ -21,7 +21,8 @@ namespace CapybaraCafePlugin.EventListeners {
 
             DiscordBridge.SendEvent("PlayerJoined", new {
                 PlayerName = ev.Player.Nickname,
-                PlayerId = ev.Player.UserId
+                PlayerId = ev.Player.UserId,
+                PlayerCount = Player.List.Count
             });
 
             // Send info to server API
@@ -30,7 +31,8 @@ namespace CapybaraCafePlugin.EventListeners {
             // Send info to server API
             DiscordBridge.SendEvent("PlayerLeft", new {
                 PlayerName = ev.Player.Nickname,
-                PlayerId = ev.Player.UserId
+                PlayerId = ev.Player.UserId,
+                PlayerCount = Player.List.Count - 1
             });
         }
 
@@ -103,7 +105,14 @@ namespace CapybaraCafePlugin.EventListeners {
         public override void OnServerRoundStarted() {
             // Send info to server API
             // In future, get player list + count
-            DiscordBridge.SendEvent("ServerRoundStarted", null);
+            DiscordBridge.SendEvent("ServerRoundStarted", new {
+                PlayerCount = Player.List.Count,
+                Players = Player.List.Select(p => new {
+                    PlayerName = p.Nickname,
+                    PlayerId = p.UserId,
+                    Role = p.Role.ToString()
+                }).ToArray()
+            });
         }
         public override void OnServerRoundEnded(RoundEndedEventArgs ev) {            
             // Send info to server API
