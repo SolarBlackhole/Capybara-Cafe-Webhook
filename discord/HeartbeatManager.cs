@@ -6,8 +6,9 @@ namespace CapybaraCafePlugin.Discord
     public class HeartbeatManager {
         private static Timer _heartbeatTimer;
 
+        public static int heartbeatInterval;
         public static void Start() {
-            _heartbeatTimer = new Timer(15000); // 15 seconds
+            _heartbeatTimer = new Timer(heartbeatInterval * 1000);
             _heartbeatTimer.Elapsed += OnHeartbeat;
             _heartbeatTimer.AutoReset = true;
             _heartbeatTimer.Enabled = true;

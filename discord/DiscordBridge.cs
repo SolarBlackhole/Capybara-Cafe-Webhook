@@ -10,8 +10,7 @@ namespace CapybaraCafePlugin.Discord
     public static class DiscordBridge
     {
         private static readonly HttpClient _client = new HttpClient();
-        public static string WebhookUrl = "";
-
+        public static string WebhookUrl;
         public static async void SendEvent(string eventType, object data)
         {
             if (string.IsNullOrEmpty(WebhookUrl)) return;
