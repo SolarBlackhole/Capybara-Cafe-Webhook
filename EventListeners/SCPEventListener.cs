@@ -71,7 +71,7 @@ namespace CapybaraCafePlugin.EventListeners {
             // Send info to server API
             DiscordBridge.SendEvent("ServerWaveRespawned", new {
                 PlayersRespawned = ev.Players.Select(p => p.Nickname).ToArray(),
-                Faction = ev.Wave.Faction == Faction.FoundationEnemy ? "Foundation" : "Chaos"
+                Faction = ev.Wave.Faction == Faction.FoundationEnemy ? "Chaos" : "MTF"
             });
         }
         public override void OnPlayerEscaped(PlayerEscapedEventArgs ev) {
