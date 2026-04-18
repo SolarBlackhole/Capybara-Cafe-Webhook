@@ -239,7 +239,7 @@ namespace CapybaraCafePlugin.EventListeners {
                 IssuerId = iId
             });
         }
-         public override void OnPlayerUnmuted(PlayerUnmutedEventArgs ev) {
+        public override void OnPlayerUnmuted(PlayerUnmutedEventArgs ev) {
             // Send info to server API
             string iName = !string.IsNullOrEmpty(ev.Issuer.Nickname) ? ev.Issuer.Nickname : "Server";
             string iId = (ev.Issuer is Player issuerPlayer) ? issuerPlayer.UserId : "Server";
@@ -250,6 +250,28 @@ namespace CapybaraCafePlugin.EventListeners {
                 IsIntercom = ev.IsIntercom ? "Intercom" : "Standard",
                 IssuerName = iName,
                 IssuerId = iId
+            });
+        }
+        public override void OnPlayerReportedCheater(PlayerReportedCheaterEventArgs ev)
+        {
+            DiscordBridge.SendEvent("PlayerReportedCheater", new
+            {
+                ReporterName = ev.Player.Nickname,
+                ReporterId = ev.Player.UserId,
+                ReportedName = ev.Target.Nickname,
+                ReportedId = ev.Target.UserId,
+                Reasoning = ev.Reason
+            });
+        }
+        public override void OnPlayerReportedPlayer(PlayerReportedPlayerEventArgs ev)
+        {
+            DiscordBridge.SendEvent("PlayerReportedPlayer", new
+            {
+                ReporterName = ev.Player.Nickname,
+                ReporterId = ev.Player.UserId,
+                ReportedName = ev.Target.Nickname,
+                ReportedId = ev.Target.UserId,
+                Reasoning = ev.Reason
             });
         }
     }
