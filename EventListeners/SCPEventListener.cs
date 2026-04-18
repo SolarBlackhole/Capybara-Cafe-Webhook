@@ -177,7 +177,7 @@ namespace CapybaraCafePlugin.EventListeners {
                     IssuerName = ev.BanDetails.Issuer
                 });
             } else {
-                DiscordBridge.SendEvent("PlayerBanned", new {
+                DiscordBridge.SendEvent("PlayerBannedEx", new {
                     PlayerName = ev.BanDetails.OriginalName,
                     PlayerId = ev.BanDetails.Id,
                     Reasoning = ev.BanDetails.Reason,
