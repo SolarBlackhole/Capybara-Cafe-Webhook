@@ -3,15 +3,14 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Features;
 using CapybaraCafePlugin.EventListeners;
+using CapybaraCafePlugin.Discord;
 using System;
 using LabApi.Features.Console;
 
 namespace CapybaraCafePlugin
 {
-    public class CapybaraPlugin : Plugin
+    public class CapybaraPlugin : Plugin<Config>
     {
-        public Config Config;
-
         public override string Name { get; } = "Capybara Cafe Plugin";
         public override string Description { get; } = "The CapyBara Cafe WIP Plugin";
         public override string Author { get; } = "SolarBlackHole";
@@ -20,13 +19,25 @@ namespace CapybaraCafePlugin
         public SCPEventListener Events { get;  } = new();
         public override void Enable()
         {
+
+            DiscordBridge.WebhookUrl = Config.WebhookUrl;
+            HeartbeatManager.heartbeatInterval = Config.HeartbeatInterval;
+            if (string.IsNullOrEmpty(DiscordBridge.WebhookUrl))
+            {
+                Logger.Error("Webhook URL is not set in the configuration. Please set it before enabling the plugin.");
+                return;
+            }
+
             CustomHandlersManager.RegisterEventsHandler(Events);
+            HeartbeatManager.Start();
             Logger.Info("Capybara Cafe Plugin has been enabled!");
+
         }
 
         public override void Disable()
         {
             CustomHandlersManager.UnregisterEventsHandler(Events);
+            HeartbeatManager.Stop();
             Logger.Info("Capybara Cafe Plugin has been disabled!");
         }
     }

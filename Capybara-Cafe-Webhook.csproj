@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Text" />
     <Reference Include="Asssembly-CSharp">
       <HintPath>lib/Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -23,6 +27,12 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
           <HintPath>lib/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror">
+          <HintPath>lib/Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="CommandSystem.Core">
+          <HintPath>lib/CommandSystem.Core.dll</HintPath>
     </Reference>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
