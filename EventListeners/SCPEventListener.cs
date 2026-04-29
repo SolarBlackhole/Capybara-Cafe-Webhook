@@ -234,6 +234,7 @@ namespace CapybaraCafePlugin.EventListeners {
             DiscordBridge.SendEvent("PlayerMuted", new {
                 PlayerName = ev.Player.Nickname,
                 PlayerId = ev.Player.UserId,
+                Reasoning = ev.Reason,
                 IsIntercom = ev.IsIntercom ? "Intercom" : "Standard",
                 IssuerName = iName,
                 IssuerId = iId
@@ -247,6 +248,7 @@ namespace CapybaraCafePlugin.EventListeners {
             DiscordBridge.SendEvent("PlayerUnmuted", new {
                 PlayerName = ev.Player.Nickname,
                 PlayerId = ev.Player.UserId,
+                Reasoning = ev.Reason,
                 IsIntercom = ev.IsIntercom ? "Intercom" : "Standard",
                 IssuerName = iName,
                 IssuerId = iId
