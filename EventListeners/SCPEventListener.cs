@@ -48,8 +48,8 @@ namespace CapybaraCafePlugin.EventListeners {
                 {
                     PlayerName = ev.Player.Nickname,
                     PlayerId = ev.Player.UserId,
-                    Role = ev.Player.Role.ToString()
-                    // DamageType = ev.DamageHandler.DamageType.ToString() // Will Address Later
+                    Role = ev.OldRole.ToString(),
+                    // DamageType = ev.DamageHandler.DamageType.ToString()
                 });
                 return;
             }
@@ -59,7 +59,7 @@ namespace CapybaraCafePlugin.EventListeners {
                 {
                     VictimName = ev.Player.Nickname,
                     VictimId = ev.Player.UserId,
-                    VictimRole = ev.Player.Role.ToString(),
+                    VictimRole = ev.OldRole.ToString(),
                     AttackerName = ev.Attacker.Nickname,
                     AttackerId = ev.Attacker.UserId,
                     AttackerRole = ev.Attacker.Role.ToString()
@@ -79,7 +79,7 @@ namespace CapybaraCafePlugin.EventListeners {
             DiscordBridge.SendEvent("PlayerEscaped", new {
                 PlayerName = ev.Player.Nickname,
                 PlayerId = ev.Player.UserId,
-                Role = ev.Player.Role.ToString()
+                Role = ev.OldRole.ToString()
             });
         }
         public override void OnServerSentAdminChat(SentAdminChatEventArgs ev) {
@@ -104,7 +104,7 @@ namespace CapybaraCafePlugin.EventListeners {
         // Server events
         public override void OnServerRoundStarted() {
             // Send info to server API
-            // In future, get player list + count
+            Server.FriendlyFire = false;
             DiscordBridge.SendEvent("ServerRoundStarted", new {
                 PlayerCount = Player.List.Count,
                 Players = Player.List.Select(p => new {
@@ -114,6 +114,11 @@ namespace CapybaraCafePlugin.EventListeners {
                 }).ToArray()
             });
         }
+        public override void OnServerRoundEnding(RoundEndingEventArgs ev) {
+            // Friendly Fire toggle on
+            // Server.SendBroadcast("Friendly Fire has been enabled.", 10);
+            Server.FriendlyFire = true;
+        }
         public override void OnServerRoundEnded(RoundEndedEventArgs ev) {            
             // Send info to server API
             DiscordBridge.SendEvent("ServerRoundEnded", new {
@@ -121,11 +126,13 @@ namespace CapybaraCafePlugin.EventListeners {
                 EscapedDClass = RoundSummary.EscapedClassD.ToString(),
                 EscapedScientists = RoundSummary.EscapedScientists.ToString(),
                 SCPKills = RoundSummary.KilledBySCPs.ToString(),
+                SurvivingSCPs = RoundSummary.SurvivingSCPs.ToString(),
                 WarheadDetonated = Warhead.IsDetonated.ToString()
             });
         }
         public override void OnServerWaitingForPlayers() {
             // Send info to server API
+            Server.FriendlyFire = false;
             DiscordBridge.SendEvent("ServerWaitingForPlayers", null);
         }
         public override void OnPlayerBanned(PlayerBannedEventArgs ev) {
