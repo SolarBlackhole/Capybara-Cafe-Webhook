@@ -32,12 +32,12 @@ namespace CapybaraCafePlugin.Discord
                 // Fire and forget so the game doesn't lag
                 if (!isModeration)
                 {
-                    string url = WebhookUrl + normalBotPort;
+                    string url = WebhookUrl + ":" + normalBotPort + "/webhook";
                     await _client.PostAsync(url, content);
                 }
                 else if (isModeration)
                 {
-                    string url = WebhookUrl + moderationBotPort;
+                    string url = WebhookUrl + ":" + moderationBotPort + "/webhook";
                     await _client.PostAsync(url, content);
                 }
             }

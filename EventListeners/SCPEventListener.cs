@@ -10,10 +10,15 @@ using LabApi.Features.Wrappers;
 using PlayerRoles;
 using RemoteAdmin;
 using CapybaraCafePlugin.Discord;
+using LabApi.Features.Console;
 
 
 namespace CapybaraCafePlugin.EventListeners {
     public class SCPEventListener : CustomEventsHandler {
+
+        private Player fastestEscapePlayer;
+        private TimeSpan escapeTime;
+        private RoleTypeId escapeRole;
         // Player events
         public override void OnPlayerJoined(PlayerJoinedEventArgs ev) {
             string message = "Welcome to the Capybara Cafe!\n Please read the <color=#e74c3c>rules</color> and check out our <color=#7289da>Discord</color>. Have Fun!";
@@ -49,7 +54,7 @@ namespace CapybaraCafePlugin.EventListeners {
                     PlayerName = ev.Player.Nickname,
                     PlayerId = ev.Player.UserId,
                     Role = ev.OldRole.ToString(),
-                    // DamageType = ev.DamageHandler.DamageType.ToString()
+                    // DamageType = ev.DamageHandler
                 });
                 return;
             }
@@ -76,6 +81,16 @@ namespace CapybaraCafePlugin.EventListeners {
         }
         public override void OnPlayerEscaped(PlayerEscapedEventArgs ev) {
             // Send info to server API
+            if (ev.Player == null || ev.Player.Role == RoleTypeId.None)
+            {
+                return;
+            }
+            if (fastestEscapePlayer == null || Round.Duration < escapeTime)
+            {
+                fastestEscapePlayer = ev.Player;
+                escapeTime = Round.Duration.Add(TimeSpan.FromSeconds(11));
+                escapeRole = ev.OldRole;
+            }
             DiscordBridge.SendEvent("PlayerEscaped", false, new {
                 PlayerName = ev.Player.Nickname,
                 PlayerId = ev.Player.UserId,
@@ -104,6 +119,7 @@ namespace CapybaraCafePlugin.EventListeners {
         // Server events
         public override void OnServerRoundStarted() {
             // Send info to server API
+            fastestEscapePlayer = null;
             Server.FriendlyFire = false;
             DiscordBridge.SendEvent("ServerRoundStarted", false, new {
                 PlayerCount = Player.List.Count,
@@ -116,7 +132,11 @@ namespace CapybaraCafePlugin.EventListeners {
         }
         public override void OnServerRoundEnding(RoundEndingEventArgs ev) {
             // Friendly Fire toggle on
-            // Server.SendBroadcast("Friendly Fire has been enabled.", 10);
+            foreach (Player player in Player.GetAll())
+            {
+                player.SendHint("Friendly Fire has been enabled", 10);
+                player.SendBroadcast(fastestEscapePlayer.Nickname + " escaped in " + escapeTime.ToString(@"mm\:ss") + " as a " + escapeRole, 20);
+            }
             Server.FriendlyFire = true;
         }
         public override void OnServerRoundEnded(RoundEndedEventArgs ev) {            
