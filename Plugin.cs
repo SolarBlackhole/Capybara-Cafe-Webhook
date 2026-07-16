@@ -21,10 +21,14 @@ namespace CapybaraCafePlugin
         {
 
             DiscordBridge.WebhookUrl = Config.WebhookUrl;
+            DiscordBridge.normalBotPort = Config.normalBotPort;
+            DiscordBridge.moderationBotPort = Config.moderationBotPort;
             HeartbeatManager.heartbeatInterval = Config.HeartbeatInterval;
-            if (string.IsNullOrEmpty(DiscordBridge.WebhookUrl))
+            if (string.IsNullOrEmpty(DiscordBridge.WebhookUrl) || 
+                string.IsNullOrEmpty(DiscordBridge.normalBotPort) || 
+                string.IsNullOrEmpty(DiscordBridge.moderationBotPort))
             {
-                Logger.Error("Webhook URL is not set in the configuration. Please set it before enabling the plugin.");
+                Logger.Error("Webhook URL or one of the bot ports are not set in the configuration. Please set it before enabling the plugin.");
                 return;
             }
 

@@ -11,7 +11,9 @@ namespace CapybaraCafePlugin.Discord
     {
         private static readonly HttpClient _client = new HttpClient();
         public static string WebhookUrl;
-        public static async void SendEvent(string eventType, object data)
+        public static string normalBotPort;
+        public static string moderationBotPort;
+        public static async void SendEvent(string eventType, bool isModeration, object data)
         {
             if (string.IsNullOrEmpty(WebhookUrl)) return;
 
@@ -28,7 +30,16 @@ namespace CapybaraCafePlugin.Discord
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 // Fire and forget so the game doesn't lag
-                await _client.PostAsync(WebhookUrl, content);
+                if (!isModeration)
+                {
+                    string url = WebhookUrl + ":" + normalBotPort + "/webhook";
+                    await _client.PostAsync(url, content);
+                }
+                else if (isModeration)
+                {
+                    string url = WebhookUrl + ":" + moderationBotPort + "/webhook";
+                    await _client.PostAsync(url, content);
+                }
             }
             catch (Exception ex)
             {

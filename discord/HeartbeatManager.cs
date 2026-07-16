@@ -22,7 +22,7 @@ namespace CapybaraCafePlugin.Discord
         }
 
         private static void OnHeartbeat(object sender, ElapsedEventArgs e) {
-            DiscordBridge.SendEvent("Heartbeat", new {
+            DiscordBridge.SendEvent("Heartbeat", false, new {
                 Timestamp = System.DateTime.UtcNow,
                 PlayerCount = Player.List.Count
             });
