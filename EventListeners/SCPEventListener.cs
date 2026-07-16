@@ -10,7 +10,12 @@ using LabApi.Features.Wrappers;
 using PlayerRoles;
 using RemoteAdmin;
 using CapybaraCafePlugin.Discord;
+using PlayerStatsSystem;
 using LabApi.Features.Console;
+using PlayerRoles.PlayableScps.Scp939;
+using PlayerRoles.PlayableScps.Scp3114;
+using InventorySystem.Items.Scp1509;
+using PlayerRoles.PlayableScps.Scp1507;
 
 
 namespace CapybaraCafePlugin.EventListeners {
@@ -54,7 +59,7 @@ namespace CapybaraCafePlugin.EventListeners {
                     PlayerName = ev.Player.Nickname,
                     PlayerId = ev.Player.UserId,
                     Role = ev.OldRole.ToString(),
-                    // DamageType = ev.DamageHandler
+                    DamageType = GetDamageType(ev.DamageHandler)
                 });
                 return;
             }
@@ -67,8 +72,8 @@ namespace CapybaraCafePlugin.EventListeners {
                     VictimRole = ev.OldRole.ToString(),
                     AttackerName = ev.Attacker.Nickname,
                     AttackerId = ev.Attacker.UserId,
-                    AttackerRole = ev.Attacker.Role.ToString()
-                    // DamageType = ev.DamageHandler.DamageType.ToString() // Will Address Later
+                    AttackerRole = ev.Attacker.Role.ToString(),
+                    DamageType = GetDamageType(ev.DamageHandler) // Will Address Later
                 });
             }
         }
@@ -88,7 +93,7 @@ namespace CapybaraCafePlugin.EventListeners {
             if (fastestEscapePlayer == null || Round.Duration < escapeTime)
             {
                 fastestEscapePlayer = ev.Player;
-                escapeTime = Round.Duration.Add(TimeSpan.FromSeconds(11));
+                escapeTime = Round.Duration;
                 escapeRole = ev.OldRole;
             }
             DiscordBridge.SendEvent("PlayerEscaped", false, new {
@@ -132,10 +137,23 @@ namespace CapybaraCafePlugin.EventListeners {
         }
         public override void OnServerRoundEnding(RoundEndingEventArgs ev) {
             // Friendly Fire toggle on
+            string escapeText = "Null";
+            bool anyEscape = fastestEscapePlayer != null ? true : false;
+            if (anyEscape && escapeRole == RoleTypeId.ClassD)
+            {
+                escapeText = "<color=#ff8e00>Class-D</color>";
+            } else if (anyEscape && escapeRole == RoleTypeId.Scientist)
+            {
+                escapeText = "<color=#ffff7c>Scientist</color>";
+            }
+
             foreach (Player player in Player.GetAll())
             {
                 player.SendHint("Friendly Fire has been enabled", 10);
-                player.SendBroadcast(fastestEscapePlayer.Nickname + " escaped in " + escapeTime.ToString(@"mm\:ss") + " as a " + escapeRole, 20);
+                if (anyEscape)
+                {
+                    player.SendBroadcast("<color=#22EC22>" + fastestEscapePlayer.Nickname + "</color> escaped in " + escapeTime.ToString(@"mm\:ss") + " as a " + escapeText, 20);
+                }
             }
             Server.FriendlyFire = true;
         }
@@ -335,5 +353,53 @@ namespace CapybaraCafePlugin.EventListeners {
             });
         }
         
+        private string GetDamageType(DamageHandlerBase handlerBase)
+        {
+            switch (handlerBase)
+            {
+                case Scp049DamageHandler:
+                    return "SCP-049";
+                case Scp939DamageHandler:
+                    return "SCP-939";
+                case Scp096DamageHandler:
+                    return "SCP-096";
+                case Scp3114DamageHandler:
+                    return "SCP-3114";
+                case Scp018DamageHandler:
+                    return "SCP-018";
+                case Scp1507DamageHandler:
+                    return "SCP-1507";
+                case Scp956DamageHandler:
+                    return "SCP-956";
+                case ScpDamageHandler:
+                    return "SCP";
+                // Weapons
+                case CustomReasonFirearmDamageHandler customHandler:
+                    return customHandler.WeaponType.ToString();
+                case FirearmDamageHandler firearmHandler:
+                    return firearmHandler.WeaponType.ToString();
+                case DisruptorDamageHandler:
+                    return "X-3 Disruptor";
+                case JailbirdDamageHandler:
+                    return "JailBird";
+                case MicroHidDamageHandler:
+                    return "Micro-HID";
+                case Scp1509DamageHandler:
+                    return "SCP-1509";
+                // Others
+                case ExplosionDamageHandler:
+                    return "Explosion";
+                case RecontainmentDamageHandler:
+                    return "Recontained";
+                case WarheadDamageHandler:
+                    return "Alpha Warhead";
+                case UniversalDamageHandler universal:
+                    return DeathTranslations.TranslationsById.TryGetValue(universal.TranslationId, out DeathTranslation translation) ?
+                        translation.LogLabel : $"Unknown ({universal.TranslationId})";
+
+                default:
+                    return "Unknown";
+            }
+        }
     }
 }
