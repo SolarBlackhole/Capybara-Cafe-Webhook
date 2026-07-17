@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
-using LabApi.Features.Enums;
 using LabApi.Features.Wrappers;
 using PlayerRoles;
 using RemoteAdmin;
 using CapybaraCafePlugin.Discord;
+using CapybaraCafePlugin.Leaderboard;
 using PlayerStatsSystem;
-using LabApi.Features.Console;
 using PlayerRoles.PlayableScps.Scp939;
 using PlayerRoles.PlayableScps.Scp3114;
 using InventorySystem.Items.Scp1509;
@@ -20,10 +16,7 @@ using PlayerRoles.PlayableScps.Scp1507;
 
 namespace CapybaraCafePlugin.EventListeners {
     public class SCPEventListener : CustomEventsHandler {
-
-        private Player fastestEscapePlayer;
-        private TimeSpan escapeTime;
-        private RoleTypeId escapeRole;
+        private CurrentLeaderboard currentLeaderboard;
         // Player events
         public override void OnPlayerJoined(PlayerJoinedEventArgs ev) {
             string message = "Welcome to the Capybara Cafe!\n Please read the <color=#e74c3c>rules</color> and check out our <color=#7289da>Discord</color>. Have Fun!";
@@ -65,6 +58,10 @@ namespace CapybaraCafePlugin.EventListeners {
             }
             else
             {
+                if (ev.Attacker.IsSCP)
+                {
+                    currentLeaderboard.AddSCPKill(ev.Attacker);
+                }
                 DiscordBridge.SendEvent("PlayerKilled", false, new
                 {
                     VictimName = ev.Player.Nickname,
@@ -90,11 +87,9 @@ namespace CapybaraCafePlugin.EventListeners {
             {
                 return;
             }
-            if (fastestEscapePlayer == null || Round.Duration < escapeTime)
+            if (!currentLeaderboard.AnyEscapes())
             {
-                fastestEscapePlayer = ev.Player;
-                escapeTime = Round.Duration;
-                escapeRole = ev.OldRole;
+                currentLeaderboard.SetFastestEscape(ev.Player, Round.Duration, ev.OldRole);
             }
             DiscordBridge.SendEvent("PlayerEscaped", false, new {
                 PlayerName = ev.Player.Nickname,
@@ -124,7 +119,7 @@ namespace CapybaraCafePlugin.EventListeners {
         // Server events
         public override void OnServerRoundStarted() {
             // Send info to server API
-            fastestEscapePlayer = null;
+            resetLeaderboard();
             Server.FriendlyFire = false;
             DiscordBridge.SendEvent("ServerRoundStarted", false, new {
                 PlayerCount = Player.List.Count,
@@ -137,22 +132,24 @@ namespace CapybaraCafePlugin.EventListeners {
         }
         public override void OnServerRoundEnding(RoundEndingEventArgs ev) {
             // Friendly Fire toggle on
-            string escapeText = "Null";
-            bool anyEscape = fastestEscapePlayer != null ? true : false;
-            if (anyEscape && escapeRole == RoleTypeId.ClassD)
+            string escapeAnnouncement = currentLeaderboard.GetFastestEscapeMessage();
+            string mostKillsAnnouncement = currentLeaderboard.GetSCPMostKills();
+            string endAnnouncement = "";
+            if (!string.IsNullOrEmpty(escapeAnnouncement))
             {
-                escapeText = "<color=#ff8e00>Class-D</color>";
-            } else if (anyEscape && escapeRole == RoleTypeId.Scientist)
+                endAnnouncement += escapeAnnouncement + "\n";
+            }
+            if (!string.IsNullOrEmpty(mostKillsAnnouncement))
             {
-                escapeText = "<color=#ffff7c>Scientist</color>";
+                endAnnouncement += mostKillsAnnouncement + "\n";
             }
 
             foreach (Player player in Player.GetAll())
             {
-                player.SendHint("Friendly Fire has been enabled", 10);
-                if (anyEscape)
+                player.SendHint("Friendly Fire has been enabled", 20);
+                if (!string.IsNullOrEmpty(endAnnouncement))
                 {
-                    player.SendBroadcast("<color=#22EC22>" + fastestEscapePlayer.Nickname + "</color> escaped in " + escapeTime.ToString(@"mm\:ss") + " as a " + escapeText, 20);
+                    player.SendBroadcast(endAnnouncement, 20);
                 }
             }
             Server.FriendlyFire = true;
@@ -400,6 +397,11 @@ namespace CapybaraCafePlugin.EventListeners {
                 default:
                     return "Unknown";
             }
+        }
+        private void resetLeaderboard()
+        {
+            currentLeaderboard = null;
+            currentLeaderboard = new CurrentLeaderboard();
         }
     }
 }

@@ -1,4 +1,3 @@
-using LabApi.Loader.Features; // Often where PluginEntryPoint lives now
 using LabApi.Events.CustomHandlers;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Features;
@@ -14,7 +13,7 @@ namespace CapybaraCafePlugin
         public override string Name { get; } = "Capybara Cafe Plugin";
         public override string Description { get; } = "The CapyBara Cafe WIP Plugin";
         public override string Author { get; } = "SolarBlackHole";
-        public override Version Version { get; } = new Version(1, 0, 0, 0);
+        public override Version Version { get; } = new Version(1, 0, 2, 0);
         public override Version RequiredApiVersion { get; } = new Version(LabApiProperties.CompiledVersion);
         public SCPEventListener Events { get;  } = new();
         public override void Enable()
