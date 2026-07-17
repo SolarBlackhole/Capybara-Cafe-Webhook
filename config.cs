@@ -1,8 +1,3 @@
-using System.ComponentModel;
-using LabApi.Features.Wrappers;
-using LabApi.Loader;
-using LabApi.Loader.Features.Paths;
-
 namespace CapybaraCafePlugin
 {
     public class Config
